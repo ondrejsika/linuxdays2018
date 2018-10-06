@@ -36,3 +36,11 @@ HOST=counter.127.0.0.1.xip.io docker-compose -f docker-compose.yml -f docker-com
 ```
 
 Open <http://counter.127.0.0.1.xip.io>
+
+
+## Resources
+
+- Slides: <https://ondrej-sika.cz/blog/2018/gitlab-ci-docker-linuxdays/>
+- Setup of Gitlab Runner in Docker: <https://github.com/ondrejsika/gitlab-ci-runner> 
+- Run Traefik with SSL: <https://github.com/ondrejsika/traefik-ssl>
+- Docker image `ondrejsika/ci`: <https://github.com/ondrejsika/ondrejsika-ci-docker>
