@@ -1,0 +1,50 @@
+image: ondrejsika/ci
+
+variables:
+    TAG: $CI_COMMIT_SHA
+    HOST: $CI_PROJECT_PATH_SLUG-$CI_COMMIT_REF_SLUG.$HOST_SUFFIX
+    COMPOSE_PROJECT_NAME: $CI_PROJECT_PATH_SLUG-$CI_COMMIT_SHA
+
+stages:
+    - build
+    - test
+    - deploy
+
+job_build:
+    stage: build
+    script:
+        - env
+        - docker-compose -f docker-compose.yml -f docker-compose-test.yml build
+        - docker-compose -f docker-compose.yml -f docker-compose-test.yml push
+        - TAG=$CI_COMMIT_REF_SLUG docker-compose -f docker-compose.yml -f docker-compose-test.yml build
+        - TAG=$CI_COMMIT_REF_SLUG docker-compose -f docker-compose.yml -f docker-compose-test.yml push
+
+job_test:
+    stage: test
+    script:
+        - docker-compose -f docker-compose.yml -f docker-compose-test.yml up --no-build test
+        - docker-compose -f docker-compose.yml -f docker-compose-test.yml down 
+
+job_deploy:
+    stage: deploy
+    when: manual
+    environment:
+        name: $CI_COMMIT_REF_SLUG
+        on_stop: job_deploy_stop
+        url: https://$CI_PROJECT_PATH_SLUG-$CI_COMMIT_REF_SLUG.$HOST_SUFFIX
+    variables:
+        COMPOSE_PROJECT_NAME: $CI_PROJECT_PATH_SLUG-$CI_COMMIT_REF_SLUG
+    script:
+        - docker-compose -f docker-compose.yml -f docker-compose-traefik.yml down
+        - docker-compose -f docker-compose.yml -f docker-compose-traefik.yml up -d --no-build 
+
+job_deploy_stop:
+    stage: deploy
+    when: manual
+    environment:
+        name: $CI_COMMIT_REF_SLUG
+        action: stop
+    variables:
+        COMPOSE_PROJECT_NAME: $CI_PROJECT_PATH_SLUG-$CI_COMMIT_REF_SLUG
+    script:
+        - docker-compose -f docker-compose.yml -f docker-compose-traefik.yml down

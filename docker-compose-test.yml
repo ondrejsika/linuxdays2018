@@ -1,0 +1,7 @@
+version: '3.6'
+services:
+    test:
+        build: test
+        image: reg.istry.cz/linuxdays2018/test:${TAG:-latest}
+        depends_on:
+            - counter

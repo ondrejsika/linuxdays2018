@@ -1,0 +1,16 @@
+version: '3.6'
+services:
+    counter:
+        build: app
+        image: reg.istry.cz/linuxdays2018/app:${TAG:-latest}
+        depends_on:
+            - redis
+        networks:
+            - default
+    redis:
+        image: redis:alpine
+        networks:
+            - default
+
+networks:
+    default:

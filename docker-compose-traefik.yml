@@ -1,0 +1,17 @@
+version: '3.6'
+services:
+    counter:
+        labels:
+            - traefik.frontend.rule=Host:$HOST
+            - traefik.port=80
+            - traefik.frontend.entryPoints=http,https
+            - traefik.docker.network=traefik
+        networks:
+            - default
+            - traefik
+
+networks:
+    traefik:
+        external: true
+        name: traefik
+        
